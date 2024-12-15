@@ -1,0 +1,53 @@
+name: 'AWS Send Webhook'
+description: 'GitHub Action to send a secure webhook to an AWS handler using a Secrets Manager token and GitHub OIDC for role assumption.'
+author: 'Guy Erreich'
+branding:
+  color: 'blue'
+  icon: 'send'
+
+inputs:
+  webhook_url:
+    description: 'The URL to which the webhook will be sent.'
+    required: true
+  aws_region:
+    description: 'The AWS region where the secret is stored.'
+    required: true
+  aws_role_to_assume:
+    description: 'The AWS IAM role to assume for securely accessing AWS Secrets Manager using GitHub OIDC.'
+    required: true
+  audience:
+    description: 'The audience value to be included in the OIDC token request URL, if applicable.'
+    default: 'sts.amazonaws.com'
+  secret_name:
+    description: 'The name of the secret stored in AWS Secrets Manager (e.g., a token).'
+    required: true
+  content_type:
+    description: 'Content-Type header for the request, such as application/json (default: application/json).'
+    default: 'application/json'
+  headers:
+    description: 'Optional additional headers to include in the webhook request. Provide as a JSON object.'
+    required: false
+  payload:
+    description: 'The JSON payload to send in the webhook request.'
+    required: true
+
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - --webhook_url
+    - ${{ inputs.webhook_url }}
+    - --aws_region
+    - ${{ inputs.aws_region }}
+    - --aws_role_to_assume
+    - ${{ inputs.aws_role_to_assume }}
+    - --audience
+    - ${{ inputs.audience }}
+    - --secret_name
+    - ${{ inputs.secret_name }}
+    - --content_type
+    - ${{ inputs.content_type }}
+    - --headers
+    - ${{ inputs.headers }}
+    - --payload
+    - ${{ inputs.payload }}
